@@ -6,7 +6,7 @@ let fail = function() {
     console.log.apply(console, args);
     process.exit(1); }
 
-let get_driver = driver => {
+let get_driver_path = driver => {
 
     let fs = require('fs');
 
@@ -31,16 +31,11 @@ let get_driver = driver => {
     return driver_path;
 }
 
-let get_boot_data = () => {
-    let boot_path = 'boot.js';
-    let fs = require('fs');
-    if (!fs.existsSync(boot_path)) fail(boot_path,'does not exist');
-    return fs.readFileSync(boot_path);
-}
-
-let get_server = (driver_data, boot_data) => {
+let get_server = (base_path, driver_data) => {
 
     let fn = (req,res) => {
+
+        let fs = require('fs');
         log(req.method, req.url);
         if (req.method != 'GET')
         {
@@ -48,10 +43,31 @@ let get_server = (driver_data, boot_data) => {
             res.end('bad method: '+req.method);
             return;
         }
-        if (req.url == '/boot.js')
+        if (req.url != '/' && fs.existsSync(base_path+req.url))
         {
-            res.writeHead(200, { 'Content-Type': 'text/javascript' });
-            res.end(boot_data);
+            var extname = require('path').extname(base_path+req.url);
+            var contentType = 'text/html';
+            switch (extname) {
+                case '.html':
+                    contentType = 'text/html';
+                case '.js':
+                    contentType = 'text/javascript';
+                    break;
+                case '.css':
+                    contentType = 'text/css';
+                    break;
+                case '.json':
+                    contentType = 'application/json';
+                    break;
+            }
+            if (!contentType)
+            {
+                log('unknown content type:',base_path+req.url);
+                res.writeHead(404);
+                res.end('unknown content type:',base_path+req.url());
+            }
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(fs.readFileSync(base_path+req.url));
             return;
         }
         if (req.url != '/' && req.url != '/index.html')
@@ -62,21 +78,18 @@ let get_server = (driver_data, boot_data) => {
             return;
         }
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(driver_data);
+        res.end(fs.readFileSync(driver_path));
     }
 
     return require('http').createServer(fn);
 }
 
-let driver_path = get_driver('tests/example');
+let base_path = 'tests/example'
+let driver_path = get_driver_path(base_path);
 
 log('using '+driver_path+' as driver');
 
-let boot_data = get_boot_data();
-
-let driver_data = require('fs').readFileSync(driver_path);
-
-let server = get_server(driver_data, boot_data);
+let server = get_server(base_path, driver_path);
 
 server.listen(8080);
 
