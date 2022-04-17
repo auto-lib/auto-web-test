@@ -228,3 +228,100 @@ d131dd02c5e6eec4 fail - DELETED
 d131dd02c7e6eec4 passed
 d13ddd02c5e6eec4 passed
 ```
+
+## animate test
+
+since we need to run this through
+nsq-bridge we can just run the
+changes back to the browser so
+that you can watch the changes
+occuring
+
+```js
+$ node animate.js
+which driver do you want to use?
+ (1) graph
+ (2) table
+ (3) blerg
+ (e) EXIT
+> 1
+which test run for blerg?
+ (1) one
+ (2) two
+ (3) blerg
+ (d) DRIVER MENU
+ (e) EXIT
+> a
+how fast should we wait between changes?
+ (1) 100ms
+ (2) 200ms
+ (3) 500ms
+ (2) 1 second
+ (3) 2 seconds
+ (d) DRIVER MENU
+ (r) RUN MENU
+ (e) EXIT
+> 1
+log changes as they happen?
+ (1) yes
+ (2) no
+ (d) DRIVER MENU
+ (s) SPEED MENU
+ (r) RUN MENU
+ (e) EXIT
+> 1
+animating test with changes logged
+x changed
+x changed
+data changed
+FINISHED
+ (r) RERUN
+ (s) SPEED MENU
+ (t) RUN MENU
+ (d) DRIVER MENU
+ (e) EXIT
+> e
+exiting
+```
+
+## driver
+
+the driver is the html you want to use
+to render the test, and which will
+record user inputs to driver the static
+variable changes.
+
+the driver serves as a test category:
+each driver can have various **runs**
+associated with it.
+
+```bash
+$ node record.js
+which driver do you want to record a run for?
+ (1) blerg
+ (2) blerg
+ (3) blerg
+> 1
+driver blerg has 12 runs currently.
+what debouncing speed do you want to use?
+ (1) 100ms
+ (2) 200ms
+ (3) 500ms
+ (4) 1 second
+> 1
+do you wish to log input changes as they happen?
+ (1) yes
+ (2) no
+> 1
+recording
+press ENTER when you are done
+x changed
+x changed
+data changed
+ENTER pressed. recording done
+do you want to specify a name?
+ (1) yes
+ (2) no - choose incremental name
+> 2
+3 changes logged to tests/blerg/runs/003.json
+```
