@@ -1,10 +1,16 @@
 
-var log = function() { console.log.apply(console, Array.prototype.slice.call(arguments)) }
+var log = function() { 
+    
+    console.log.apply(console, Array.prototype.slice.call(arguments)) 
+}
+
 let fail = function() {
+
     let args = Array.prototype.slice.call(arguments);
     args.unshift('FAIL');
     console.log.apply(console, args);
-    process.exit(1); }
+    process.exit(1); 
+}
 
 // get primary html from the test path
 let get_driver_path = test_path => {
